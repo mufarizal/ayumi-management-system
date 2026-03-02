@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile   #  ganti kalau struktur docker beda
-    container_name: ayumi-management-system_app         #  GANTI: nama project
+    container_name: ayumi-management_app         #  GANTI: nama project
     volumes:
       - .:/var/www                        #  kalau bukan PHP, biasanya /app atau /usr/src/app
     depends_on:
@@ -14,7 +14,7 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: ayumi-management-system_nginx       #  GANTI: nama project
+    container_name: ayumi-management_nginx       #  GANTI: nama project
     ports:
       - "8000:80"                         #  GANTI: port host kalau tabrakan
     volumes:
@@ -26,20 +26,20 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: ayumi-management-system_db          #  GANTI: nama project
+    container_name: ayumi-management_db          #  GANTI: nama project
     environment:
-      MYSQL_DATABASE: ayumi-management-system           #  GANTI: nama DB
+      MYSQL_DATABASE: ayumi_management_system     #  GANTI: nama DB
       MYSQL_ROOT_PASSWORD: root           #  ganti kalau mau aman
       MYSQL_ROOT_HOST: "%" 
     ports:
       - "3306:3306"                       #  ganti kalau MySQL lu bentrok
     volumes:
-      - ayumi-management-system_db_data:/var/lib/mysql 
+      - ayumi-management_db_data:/var/lib/mysql 
     restart: unless-stopped
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: ayumi-management-system_myadmin     #  GANTI: nama project
+    container_name: ayumi-management_myadmin     #  GANTI: nama project
     ports:
       - "8080:80"                         #  ganti kalau bentrok
     environment:
@@ -49,4 +49,4 @@ services:
     depends_on:
       - db
 volumes:
-  ayumi-management-system_db_data:
+  ayumi-management_db_data:
