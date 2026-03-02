@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -6,6 +6,216 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap");
+
+@layer base {
+    :root {
+        /* === BRAND PRIMARY (Merah Tua) === */
+        --color-primary: #87010e;
+        --color-primary-hover: #6f000b;
+        --color-primary-active: #5a0009;
+
+        /* === Text === */
+        --color-text-default: #374151;
+        --color-text-light: #6b7280;
+        --color-text-white: #ffffff;
+
+        /* === Sidebar === */
+        --color-sidebar-bg: #f8f9fb;
+        --color-sidebar-border: #e5e7eb;
+
+        /* === Soft Red System === */
+        --color-accent-dark: #7a0c14;
+        --color-accent-medium: #9f1239;
+        --color-accent-soft: #fdf2f4;
+
+        --color-accent-gradient-1: #7a0c14;
+        --color-accent-gradient-2: #9f1239;
+
+        --color-accent-border: #f3e8ea;
+    }
+}
+
+/* ─── Sidebar Aside ─────────────────────────── */
+.sidebar-container {
+    background-image:
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 6px
+        ),
+        linear-gradient(
+            160deg,
+            var(--sidebar-bg-dark-1) 0%,
+            var(--sidebar-bg-dark-2) 45%,
+            var(--sidebar-bg-dark-3) 100%
+        );
+
+    border-right: 1px solid
+        color-mix(in srgb, var(--color-primary) 10%, transparent);
+    /* box-shadow: 4px 0 25px
+        color-mix(in srgb, var(--color-primary) 20%, transparent); */
+        background: rgba(248, 249, 251, 0.8);
+}
+
+/* ─── Scrollbar ─────────────────────────── */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 3px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: color-mix(
+        in srgb,
+        var(--color-primary-medium) 35%,
+        transparent
+    );
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--color-primary-soft) 60%, transparent);
+}
+
+/* ─── Slide-in animation (desktop only) ─── */
+@keyframes sidebarIn {
+    from {
+        opacity: 0;
+        transform: translateX(-24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (min-width: 1024px) {
+    .sidebar-main {
+        animation: sidebarIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+}
+
+/* ─── Group label ───────────────────────── */
+.sidebar-group-label {
+    cursor: pointer;
+}
+
+.sidebar-group-label:hover > div {
+    color: var(--color-primary-text) !important;
+}
+
+/* ─── Nav item base ─────────────────────── */
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--color-text-default);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-family: "Sora", system-ui, sans-serif;
+}
+
+/* ─── Hover ─────────────────────────────── */
+.sidebar-nav-item:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+/* ─── Active ────────────────────────────── */
+.sidebar-nav-item.active {
+    background: var(--color-primary-active);
+    color: var(--color-text-white);
+}
+
+.sidebar-nav-item:hover::before {
+    opacity: 1;
+}
+
+/* ─── Active state ──────────────────────── */
+.sidebar-nav-item.active {
+    color: #ffffff;
+    background: color-mix(in srgb, var(--color-primary) 22%, transparent);
+    border-left-color: var(--color-primary-soft);
+    box-shadow:
+        0 0 18px color-mix(in srgb, var(--color-primary) 40%, transparent),
+        inset 0 0 0 1px
+            color-mix(in srgb, var(--color-primary-soft) 30%, transparent);
+}
+
+.sidebar-nav-item.active .nav-icon {
+    color: var(--color-primary-glow);
+    filter: drop-shadow(0 0 6px var(--color-primary-glow));
+}
+
+@keyframes glowPulse {
+    0%,
+    100% {
+        box-shadow:
+            0 0 16px color-mix(in srgb, var(--color-primary) 30%, transparent),
+            inset 0 0 0 1px
+                color-mix(in srgb, var(--color-primary-soft) 20%, transparent);
+    }
+
+    50% {
+        box-shadow:
+            0 0 26px color-mix(in srgb, var(--color-primary) 50%, transparent),
+            inset 0 0 0 1px
+                color-mix(in srgb, var(--color-primary-soft) 40%, transparent);
+    }
+}
+
+/* ─── Sub-item overrides ────────────────── */
+.sidebar-nav-item.sub {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    color: var(--color-text-light);
+}
+
+.sidebar-nav-item.sub:hover {
+    background: var(--color-primary-hover);
+    color: var(--color-text-white);
+}
+
+.sidebar-nav-item.sub.active {
+    background: var(--color-primary-active);
+    color: var(--color-text-white);
+}
+
+/* ─── Nav icon ──────────────────────────── */
+.nav-icon {
+    flex-shrink: 0;
+    color: var(--color-text-light);
+    transition: color 0.2s ease;
+}
+
+.sidebar-nav-item:hover .nav-icon,
+.sidebar-nav-item.active .nav-icon {
+    color: var(--color-text-white);
+}
+
+/* ─── Logout button ─────────────────────── */
+.sidebar-logout-btn {
+    color: var(--color-accent-medium);
+    font-family: "Sora", system-ui, sans-serif;
+}
+
+.sidebar-logout-btn:hover {
+    background: var(--color-primary-hover);
+    color: var(--color-text-white);
+    transform: translateX(2px);
 }
