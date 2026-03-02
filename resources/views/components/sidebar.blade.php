@@ -3,17 +3,20 @@
     $userMenus = [
         [
             'label' => 'Pengguna',
-            'route' => 'users.*',
+            'route' => 'admin.users.index',
+            'active' => 'admin.users.*',
             'icon' => 'users',
         ],
         [
             'label' => 'Pengajar',
-            'route' => 'teachers.*',
+            'route' => 'admin.teachers.index',
+            'active' => 'admin.teachers.*',
             'icon' => 'graduation-cap',
         ],
         [
             'label' => 'Siswa',
-            'route' => 'students.*',
+            'route' => 'admin.students.index',
+            'active' => 'admin.students.*',
             'icon' => 'book-open',
         ],
     ];
@@ -21,27 +24,32 @@
     $academicMenus = [
         [
             'label' => 'Kelas',
-            'route' => 'classes.*',
+            'route' => 'admin.classes.index',
+            'active' => 'admin.classes.*',
             'icon' => 'school',
         ],
         [
             'label' => 'Pendaftaran',
-            'route' => 'enrollments.*',
+            'route' => 'admin.enrollments.index',
+            'active' => 'admin.enrollments.*',
             'icon' => 'user-plus',
         ],
         [
             'label' => 'Jadwal',
-            'route' => 'schedules.*',
+            'route' => 'admin.schedules.index',
+            'active' => 'admin.schedules.*',
             'icon' => 'calendar',
         ],
         [
             'label' => 'Presensi',
-            'route' => 'attendances.*',
+            'route' => 'admin.attendances.index',
+            'active' => 'admin.attendances.*',
             'icon' => 'check-circle',
         ],
         [
             'label' => 'Presensi Siswa',
-            'route' => 'student-attendances.*',
+            'route' => 'admin.student-attendances.index',
+            'active' => 'admin.student-attendances.*',
             'icon' => 'users',
         ],
     ];
@@ -49,22 +57,26 @@
     $contractPayrollMenus = [
         [
             'label' => 'SPK',
-            'route' => 'spk.*',
+            'route' => 'admin.spk.index',
+            'active' => 'admin.spk.*',
             'icon' => 'file-text',
         ],
         [
             'label' => 'Periode Gaji',
-            'route' => 'payroll-periods.*',
+            'route' => 'admin.payroll-periods.index',
+            'active' => 'admin.payroll-periods.*',
             'icon' => 'calendar-days',
         ],
         [
             'label' => 'Gaji',
-            'route' => 'payroll.*',
+            'route' => 'admin.payroll.index',
+            'active' => 'admin.payroll.*',
             'icon' => 'wallet',
         ],
         [
             'label' => 'Detail Gaji',
-            'route' => 'payroll-details.*',
+            'route' => 'admin.payroll-details.index',
+            'active' => 'admin.payroll-details.*',
             'icon' => 'list',
         ],
     ];
@@ -72,12 +84,14 @@
     $reportMenus = [
         [
             'label' => 'Laporan Kehadiran',
-            'route' => 'reports.attendance',
+            'route' => 'admin.reports.attendance',
+            'active' => 'admin.reports.attendance',
             'icon' => 'clipboard-check',
         ],
         [
             'label' => 'Laporan Penggajian',
-            'route' => 'reports.payroll',
+            'route' => 'admin.reports.payroll',
+            'active' => 'admin.reports.payroll',
             'icon' => 'line-chart',
         ],
     ];
@@ -187,7 +201,7 @@
                     </button>
                     <div class="ml-5 pl-3 mt-0.5 space-y-0.5 border-l border-gray-500">
                         @foreach ($userMenus as $menu)
-                            <a href="#"
+                            <a href="{{ route($menu['route']) }}"
                                 class="sidebar-nav-item sub {{ request()->routeIs($menu['route']) ? 'active' : '' }}">
 
                                 <span class="nav-icon">
@@ -212,7 +226,7 @@
                     </button>
                     <div class="ml-5 pl-3 mt-0.5 space-y-0.5 border-l border-gray-500">
                         @foreach ($academicMenus as $menu)
-                            <a href="#"
+                            <a href="{{ route($menu['route']) }}"
                                 class="sidebar-nav-item sub {{ request()->routeIs($menu['route']) ? 'active' : '' }}">
 
                                 <span class="nav-icon">
@@ -237,7 +251,7 @@
                     </button>
                     <div class="ml-5 pl-3 mt-0.5 space-y-0.5 border-l border-gray-500">
                         @foreach ($contractPayrollMenus as $menu)
-                            <a href="#"
+                            <a href="{{ route($menu['route']) }}"
                                 class="sidebar-nav-item sub {{ request()->routeIs($menu['route']) ? 'active' : '' }}">
 
                                 <span class="nav-icon">
@@ -264,7 +278,7 @@
                     </button>
                     <div class="ml-5 pl-3 mt-0.5 space-y-0.5 border-l border-gray-500">
                         @foreach ($reportMenus as $menu)
-                            <a href="#"
+                            <a href="{{ route($menu['route']) }}"
                                 class="sidebar-nav-item sub {{ request()->routeIs($menu['route']) ? 'active' : '' }}">
 
                                 <span class="nav-icon">
