@@ -15,31 +15,37 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        if (
+            !Auth::attempt([
+                'email' => $request->email,
+                'password' => $request->password,
+                'is_active' => true
+            ])
+        ) {
             return back()->withErrors([
-                'email' => 'Email Atau Password salah.'
+                'email' => 'Email / Password salah atau akun tidak aktif.'
             ]);
         }
 
         $request->session()->regenerate();
-        
+
         $user = Auth::user();
-        if (!$user->is_active) {
-            Auth::logout();
-            return back()->withErrors([
-                'email'=>'Akun Anda Tidak Aktif, Hubungi Admin.'
-            ]);
+
+        if ($user->must_change_password) {
+            return redirect()->route('view.reset');
         }
 
-        return match ($user->role){
-            'admin'=> redirect()->route('admin.dashboard'),
-            'pengajar'=> redirect()->route('pengajar.dashboard'),
-            'keuangan'=> redirect()->route('keuangan.dashboard'),
+        return match ($user->role) {
+            'admin'     => redirect()->route('admin.dashboard'),
+            'pengajar'  => redirect()->route('pengajar.dashboard'),
+            'staff'     => redirect()->route('staff.dashboard'),
+            'siswa'     => redirect()->route('siswa.dashboard'),
+            default     => abort(403),
         };
     }
 
@@ -49,5 +55,32 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('login');
+    }
+
+    public function showResetPassword()
+    {
+        return view('auth.reset-password');
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|min:6|confirmed'
+        ]);
+
+        $user = Auth::user();
+
+        $user->update([
+            'password' => $request->password,
+            'must_change_password' => false,
+        ]);
+
+        return match ($user->role) {
+            'admin'     => redirect()->route('admin.dashboard'),
+            'pengajar'  => redirect()->route('pengajar.dashboard'),
+            'staff'     => redirect()->route('staff.dashboard'),
+            'siswa'     => redirect()->route('siswa.dashboard'),
+            default     => abort(403),
+        };
     }
 }
