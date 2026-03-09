@@ -40,20 +40,16 @@ class AuthController extends Controller
             return redirect()->route('view.reset');
         }
 
-        return match ($user->role) {
-            'admin'     => redirect()->route('admin.dashboard'),
-            'pengajar'  => redirect()->route('pengajar.dashboard'),
-            'staff'     => redirect()->route('staff.dashboard'),
-            'siswa'     => redirect()->route('siswa.dashboard'),
-            default     => abort(403),
-        };
+        return $this->redirectByRole($user);
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 
@@ -75,12 +71,27 @@ class AuthController extends Controller
             'must_change_password' => false,
         ]);
 
-        return match ($user->role) {
-            'admin'     => redirect()->route('admin.dashboard'),
-            'pengajar'  => redirect()->route('pengajar.dashboard'),
-            'staff'     => redirect()->route('staff.dashboard'),
-            'siswa'     => redirect()->route('siswa.dashboard'),
-            default     => abort(403),
-        };
+        return $this->redirectByRole($user);
+    }
+
+    private function redirectByRole($user)
+    {
+        if ($user->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($user->hasRole('pengajar')) {
+            return redirect()->route('pengajar.dashboard');
+        }
+
+        if ($user->hasRole('staff')) {
+            return redirect()->route('staff.dashboard');
+        }
+
+        if ($user->hasRole('siswa')) {
+            return redirect()->route('siswa.dashboard');
+        }
+
+        abort(403);
     }
 }

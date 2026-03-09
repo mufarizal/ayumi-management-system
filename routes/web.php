@@ -6,127 +6,81 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
 Route::middleware(['auth'])->group(function () {
 
     /*========================
-    ADMIN
+     ADMIN
     ==========================*/
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
 
-        Route::resource('/users/management', UserController::class)->names('user.management');
-        Route::post('users/{user}/reset-password', [UserController::class, 'resetPasswordAdmin'])->name('user.management.reset');
-    });
+        // Dashboard
+        Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
 
-    /*========================
-    PENGAJAR
-    ==========================*/
-    Route::middleware(['role:admin'])
-        ->prefix('admin')
-        ->name('admin.')
-        ->group(function () {
-
-            // ======================
-            // Dashboard
-            // ======================
-            Route::get('/dashboard', function () {
-                return view('admin.dashboard');
-            })->name('dashboard');
-
-
-            // ======================
-            // USER MANAGEMENT
-            // ======================
-            Route::get('/pengguna', function () {
-                return view('admin.user_managements.users.index');
-            })->name('users.index');
-            Route::get('/pengajar', function () {
-                return view('admin.user_managements.teachers.index');
-            })->name('teachers.index');
-            Route::get('/siswa', function () {
-                return view('admin.user_managements.students.index');
-            })->name('students.index');
-
-
-            // ======================
-            // ACADEMIC
-            // ======================
-            Route::get('/kelas', function () {
-                return view('admin.academic_managements.classes.index');
-            })->name('classes.index');
-            Route::get('/pendaftaran', function () {
-                return view('admin.academic_managements.enrollments.index');
-            })->name('enrollments.index');
-            Route::get('/jadwal', function () {
-                return view('admin.academic_managements.schedules.index');
-            })->name('schedules.index');
-            Route::get('/presensi', function () {
-                return view('admin.academic_managements.attendances.index');
-            })->name('attendances.index');
-            Route::get('/presensi-siswa', function () {
-                return view('admin.academic_managements.student_attendances.index');
-            })->name('student-attendances.index');
-
-
-            // ======================
-            // CONTRACT & PAYROLL
-            // ======================
-            Route::get('/spk', function () {
-                return view('admin.contract_and_payrolls.spks.index');
-            })->name('spk.index');
-            Route::get('/periode-gaji', function () {
-                return view('admin.contract_and_payrolls.payroll_periods.index');
-            })->name('payroll-periods.index');
-            Route::get('/gaji', function () {
-                return view('admin.contract_and_payrolls.payrolls.index');
-            })->name('payroll.index');
-            Route::get('/detail-gaji', function () {
-                return view('admin.contract_and_payrolls.payroll_details.index');
-            })->name('payroll-details.index');
-
-
-            // ======================
-            // REPORTS
-            // ======================
-            Route::get('/laporan-kehadiran', function () {
-                return view('admin.reports.attendances_reports.index');
-            })->name('reports.attendance');
-            Route::get('/laporan-gaji', function () {
-                return view('admin.reports.payroll_reports.index');
-            })->name('reports.payroll');
+        // ======================
+        // USER MANAGEMENT
+        // ======================
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('all');
+            Route::get('/admin', [UserController::class, 'index'])->defaults('role', 'admin')->name('admin');
+            Route::get('/pengajar', [UserController::class, 'index'])->defaults('role', 'pengajar')->name('pengajar');
+            Route::get('/staff', [UserController::class, 'index'])->defaults('role', 'staff')->name('staff');
+            Route::get('/siswa', [UserController::class, 'index'])->defaults('role', 'siswa')->name('siswa');
+            Route::get('/search', [UserController::class, 'search'])->name('search');
+            Route::get('/create/{role}', [UserController::class, 'create'])->name('create');
+            Route::post('/store', [UserController::class, 'store'])->name('store');
+            Route::get('/edit/{user}', [UserController::class, 'edit'])->name('edit');
+            Route::put('/update/{user}', [UserController::class, 'update'])->name('update');
+            Route::delete('/delete/{user}', [UserController::class, 'destroy'])->name('delete');
+            Route::post('/{user}/reset-password', [UserController::class, 'resetPasswordAdmin'])->name('reset');
         });
 
-    Route::middleware(['role:keuangan'])->prefix('keuangan')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('keuangan.dashboard');
-        })->name('keuangan.dashboard');
-    });
-    Route::middleware(['role:pengajar'])->prefix('pengajar')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('pengajar.dashboard');
-        })->name('pengajar.dashboard');
+        // ======================
+        // ACADEMIC
+        // ======================
+        Route::get('/kelas', fn() => view('admin.academic_managements.classes.index'))->name('classes.index');
+        Route::get('/pendaftaran', fn() => view('admin.academic_managements.enrollments.index'))->name('enrollments.index');
+        Route::get('/jadwal', fn() => view('admin.academic_managements.schedules.index'))->name('schedules.index');
+        Route::get('/presensi', fn() => view('admin.academic_managements.attendances.index'))->name('attendances.index');
+        Route::get('/presensi-siswa', fn() => view('admin.academic_managements.student_attendances.index'))->name('student-attendances.index');
+
+        // ======================
+        // CONTRACT & PAYROLL
+        // ======================
+        Route::get('/spk', fn() => view('admin.contract_and_payrolls.spks.index'))->name('spk.index');
+        Route::get('/periode-gaji', fn() => view('admin.contract_and_payrolls.payroll_periods.index'))->name('payroll-periods.index');
+        Route::get('/gaji', fn() => view('admin.contract_and_payrolls.payrolls.index'))->name('payroll.index');
+        Route::get('/detail-gaji', fn() => view('admin.contract_and_payrolls.payroll_details.index'))->name('payroll-details.index');
+
+        // ======================
+        // REPORTS
+        // ======================
+        Route::get('/laporan-kehadiran', fn() => view('admin.reports.attendances_reports.index'))->name('reports.attendance');
+        Route::get('/laporan-gaji', fn() => view('admin.reports.payroll_reports.index'))->name('reports.payroll');
     });
 
     /*========================
-    STAFF
+     PENGAJAR
     ==========================*/
-    Route::middleware(['role:staff'])->prefix('staff')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('staff.dashboard');
-        })->name('staff.dashboard');
+    Route::middleware(['role:pengajar'])->prefix('pengajar')->name('pengajar.')->group(function () {
+        Route::get('/dashboard', fn() => view('pengajar.dashboard'))->name('dashboard');
     });
 
     /*========================
-    SISWA
+     STAFF
     ==========================*/
-    Route::middleware(['role:siswa'])->prefix('siswa')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('siswa.dashboard');
-        })->name('siswa.dashboard');
+    Route::middleware(['role:staff'])->prefix('staff')->name('staff.')->group(function () {
+        Route::get('/dashboard', fn() => view('staff.dashboard'))->name('dashboard');
     });
 
+    /*========================
+     SISWA
+    ==========================*/
+    Route::middleware(['role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
+        Route::get('/dashboard', fn() => view('siswa.dashboard'))->name('dashboard');
+    });
+
+    // Auth
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/reset/password', [AuthController::class, 'showResetPassword'])->name('view.reset');
     Route::post('/reset/password', [AuthController::class, 'resetPassword'])->name('post.reset');

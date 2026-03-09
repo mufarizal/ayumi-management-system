@@ -88,7 +88,7 @@
                     {{-- Submit --}}
                     <button type="submit"
                         class="w-full py-3 rounded-xl font-semibold text-white
-                           bg-gradient-to-r from-[#7c0000] to-[#540000]
+                           bg-linear-to-r from-[#7c0000] to-[#540000]
                            hover:from-black hover:to-[#111111]
                            transition-all duration-300
                            hover:-translate-y-1 hover:shadow-xl

@@ -15,7 +15,9 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "alert": "^6.0.2",
         "lucide": "^0.575.0",
+        "sweet": "^0.1.1",
         "sweetalert2": "^11.26.21"
     }
 }

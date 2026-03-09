@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,67 +12,104 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, $role = null)
     {
-        $query = User::query();
 
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')->orWhere('email', 'like', '%' . $request->search . '%');
+        $query = User::with('roles');
+
+        if ($role) {
+            $query->whereHas('roles', function ($q) use ($role) {
+                $q->where('name', $role);
             });
         }
 
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
+        $users = $query->latest()->paginate(10);
+
+        return view('admin.user.index', compact('users', 'role'));
+    }
+    public function search(Request $request)
+    {
+        $keyword = $request->get('q', '');
+        $role = $request->get('role', null);
+
+        $query = User::with('roles');
+
+        if ($role) {
+            $query->whereHas('roles', function ($q) use ($role) {
+                $q->where('name', $role);
+            });
         }
 
-        $users = $query->latest()->paginate(10);
-        return view('admin.user.index', compact('users'));
+        // Filter pencarian nama / email
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', '%' . $keyword . '%')
+                    ->orWhere('email', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        $users = $query->latest()->get();
+
+        return response()->json([
+            'users' => $users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => ucfirst($user->roles->first()->name ?? '-'),
+                    'is_active' => $user->is_active,
+                    'edit_url' => route('admin.users.edit', $user),
+                    'reset_url' => route('admin.users.reset', $user),
+                    'delete_url' => route('admin.users.delete', $user),
+                ];
+            }),
+        ]);
     }
 
-    public function create()
+
+    public function create($role)
     {
-        $roles = ['admin', 'pengajar', 'staff', 'siswa'];
-        return view('admin.user.create', compact('roles'));
+        return view('admin.user.create', compact('role'));
     }
+
 
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => 'required',
+            'name' => 'required',
             'email' => 'required|email|unique:users',
-            'role'  => 'required|in:admin,pengajar,staff,siswa',
+            'role' => 'required|in:admin,pengajar,staff,siswa',
         ]);
 
         $user = User::create([
-            'name'                 => $request->name,
-            'email'                => $request->email,
-            'password'             => 'password123',
-            'role'                 => $request->role,
-            'is_active'            => true,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make('password123'),
+            'is_active' => true,
             'must_change_password' => true,
-            'created_by'           => Auth::id(),
+            'created_by' => Auth::id(),
         ]);
+
+        $role = Role::where('name', $request->role)->first();
+        $user->roles()->attach($role->id);
 
         Log::info("User Created", [
             'user_id' => $user->id,
-            'createdBy' => Auth::id()
+            'createdBy' => Auth::id(),
         ]);
 
-        return redirect()->route('admin.user.management.index')
-            ->with('success', 'User berhasil ditambahkan');
+        return redirect()->route('admin.users.' . $request->role)
+            ->with('success', 'User berhasil dibuat');
     }
 
-    public function show(string $id)
-    {
-        //
-    }
 
     public function edit(User $user)
     {
-        $roles = ['admin', 'pengajar', 'staff', 'siswa'];
-        return view('admin.user.edit', compact('roles', 'user'));
+        $role = $user->roles->first()->name ?? null;
+
+        return view('admin.user.edit', compact('user', 'role'));
     }
+
 
     public function update(Request $request, User $user)
     {
@@ -84,40 +122,47 @@ class UserController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'role' => $request->role,
             'is_active' => $request->has('is_active'),
         ]);
 
+        $role = Role::where('name', $request->role)->first();
+        $user->roles()->sync([$role->id]);
+
         Log::info("User Updated", [
             'user_id' => $user->id,
-            'createdBy' => Auth::id()
+            'createdBy' => Auth::id(),
         ]);
 
-        return redirect()->route('admin.user.management')->with('success', 'User Berhasil Diupdate');
+        return redirect()->route('admin.users.' . $request->role)
+            ->with('success', 'User berhasil diupdate');
     }
+
+
     public function destroy(User $user)
     {
         $user->update(['is_active' => false]);
-        Log::warning("User deactived", [
+
+        Log::warning("User Deactivated", [
             'user_id' => $user->id,
-            'createdBy' => Auth::id()
+            'createdBy' => Auth::id(),
         ]);
-        return back()->with('success', 'User Dinonaktifkan');
+
+        return back()->with('success', 'User dinonaktifkan');
     }
+
 
     public function resetPasswordAdmin(User $user)
     {
         $user->update([
-            'password' => 'password123',
+            'password' => Hash::make('password123'),
             'must_change_password' => true,
         ]);
 
-        Log::warning("Password reset By Admin", [
+        Log::warning("Password reset by Admin", [
             'user_id' => $user->id,
-            'createdBy' => Auth::id()
+            'createdBy' => Auth::id(),
         ]);
 
-        return back()->with('success', 'Password user berhasil berhasil di reset ke default.');
-
+        return back()->with('success', 'Password berhasil di reset');
     }
 }
