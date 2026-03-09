@@ -6,6 +6,7 @@
 @section('content')
     <div class="min-h-screen" style="background: linear-gradient(135deg, #fdf2f4, #f8fafc);">
         @include('components.sidebar')
+        @include('components.alert')
 
         <div class="md:ml-64 p-8">
 
@@ -21,7 +22,7 @@
             </div>
 
             {{-- FORM CARD --}}
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden max-w-lg">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden ">
 
                 <div class="px-6 py-4"
                     style="background: linear-gradient(to right, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
@@ -70,7 +71,11 @@
                         </div>
 
                         {{-- Tombol --}}
-                        <div class="flex items-center gap-3 pt-2">
+                        <div class="flex items-center justify-end gap-3 pt-2">
+                            <a href="{{ route('admin.users.' . $role) }}"
+                                class="px-6 py-3 rounded-xl text-sm font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-all duration-200">
+                                Batal
+                            </a>
                             <button type="submit"
                                 class="flex items-center space-x-2 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 font-semibold"
                                 style="background: linear-gradient(to right, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
@@ -81,10 +86,6 @@
                             Batal → balik ke list sesuai role
                             Contoh: $role = pengajar → route('admin.users.pengajar')
                         --}}
-                            <a href="{{ route('admin.users.' . $role) }}"
-                                class="px-6 py-3 rounded-xl text-sm font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-all duration-200">
-                                Batal
-                            </a>
                         </div>
 
                     </form>

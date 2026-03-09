@@ -4,21 +4,88 @@
 @section('content')
     <div class="min-h-screen" style="background: linear-gradient(135deg, #fdf2f4, #f8fafc);">
         @include('components.sidebar')
+        @include('components.alert')
 
         <div class="md:ml-64 p-8">
 
             {{-- HEADER --}}
-            <div class="mb-8">
-                <div class="flex items-center justify-between">
+            <div class="">
+                {{-- Content --}}
+                <div class="relative flex items-center justify-between">
+                    {{-- Left Section --}}
                     <div>
-                        <h1 class="text-4xl font-bold text-[#111111] mb-2">
+                        <h1 class="text-3xl font-bold text-black mb-2">
                             {{ $role ? 'Data ' . ucfirst($role) : 'Semua User' }}
                         </h1>
-                        <p class="text-gray-600" id="total-count">
-                            Total: {{ $users->total() }} pengguna
-                        </p>
+
+                        <div class="flex items-center space-x-4">
+                            {{-- Total Users --}}
+                            <div class="flex items-center space-x-2 bg-black/5 px-4 py-2 rounded-lg backdrop-blur-sm">
+                                <i data-lucide="users" class="w-4 h-4 text-black"></i>
+                                <span class="text-black/70 text-sm">Total:</span>
+                                <span class="text-black font-semibold" id="total-count">{{ $users->total() }}</span>
+                            </div>
+
+                            {{-- Online Status --}}
+                            <div class="flex items-center space-x-2 bg-black/5 px-4 py-2 rounded-lg backdrop-blur-sm">
+                                <div class="w-2 h-2 bg-[#2faf00] rounded-full animate-pulse"></div>
+                                <span class="text-black text-sm font-medium">Online</span>
+                            </div>
+                        </div>
                     </div>
 
+                    {{-- Right Section - Clock --}}
+                    <div class="text-right bg-black/1 backdrop-blur-sm px-6 py-4 rounded-xl border border-black/20">
+                        <div class="flex">
+                            {{-- Greeting --}}
+                            <p id="greeting" class="text-sm text-black/80 mb-2 hidden"></p>
+
+                            <div>{{-- Time --}}
+                                <p id="current-time" class="text-2xl font-bold text-black mb-1 tabular-nums"></p>
+
+                                {{-- Date --}}
+                                <p id="current-date" class="text-sm text-black/70"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-5 border-gray-200">
+
+            {{-- TABEL --}}
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="relative max-w-md">
+                        {{-- <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i> --}}
+                        <input type="text" id="search-input" placeholder="Cari nama atau email..."
+                            class="w-full px-5 pr-4 py-3 rounded-xl text-sm border border-gray-200 focus:outline-none focus:border-[#87010e] bg-white shadow-sm transition-colors">
+                    </div>
+
+                    <button id="search-btn"
+                        class="flex items-center space-x-2 text-white px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+                        style="background: linear-gradient(to right, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                        <span class="font-medium text-sm">Cari</span>
+                    </button>
+
+                    {{-- Tombol reset / clear search --}}
+                    <button id="clear-btn"
+                        class="hidden items-center space-x-2 px-5 py-3 rounded-xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all duration-200">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                        <span>Reset</span>
+                    </button>
+                </div>
+
+                <div class="flex gap-2 items-center">
+                    {{-- Export --}}
+                    <a href="{{ route('admin.users.create', $role) }}"
+                        class="flex items-center space-x-2 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                        style="background: linear-gradient(to right, #00b050, #008000);">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span class="font-semibold">Export Data</span>
+                    </a>
+                    {{-- Tambah User --}}
                     @if ($role)
                         <a href="{{ route('admin.users.create', $role) }}"
                             class="flex items-center space-x-2 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -32,44 +99,6 @@
                         </a>
                     @endif
                 </div>
-            </div>
-
-            @if (session('success'))
-                <div
-                    class="mb-6 px-4 py-3 rounded-xl text-sm font-medium text-green-800 bg-green-100 border border-green-200">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <div class="flex items-center gap-3 mb-6">
-                <div class="relative flex-1 max-w-md">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input type="text" id="search-input" placeholder="Cari nama atau email..."
-                        class="w-full pl-10 pr-4 py-3 rounded-xl text-sm border border-gray-200 focus:outline-none focus:border-[#87010e] bg-white shadow-sm transition-colors">
-                </div>
-
-                <button id="search-btn"
-                    class="flex items-center space-x-2 text-white px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
-                    style="background: linear-gradient(to right, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <span class="font-medium text-sm">Cari</span>
-                </button>
-
-                {{-- Tombol reset / clear search --}}
-                <button id="clear-btn"
-                    class="hidden items-center space-x-2 px-5 py-3 rounded-xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all duration-200">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    <span>Reset</span>
-                </button>
             </div>
 
             {{-- TABEL --}}
@@ -134,25 +163,16 @@
                                     <td class="px-6 py-4">
                                         <div class="flex items-center space-x-2">
                                             <a href="{{ route('admin.users.edit', $user) }}"
-                                                class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-[#87010e] transition-all duration-200"
+                                                class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-green-500 transition-all duration-200"
                                                 title="Edit">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
+                                                <i data-lucide="edit" class="w-4 h-4"></i>
                                             </a>
                                             <form action="{{ route('admin.users.reset', $user) }}" method="POST">
                                                 @csrf
                                                 <button type="submit"
                                                     class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-blue-500 transition-all duration-200"
                                                     title="Reset Password">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                                    </svg>
+                                                    <i data-lucide="key-round" class="w-4 h-4"></i>
                                                 </button>
                                             </form>
                                             @if ($user->is_active)
@@ -162,12 +182,7 @@
                                                     <button type="submit"
                                                         class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-red-500 transition-all duration-200"
                                                         title="Nonaktifkan">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
-                                                        </svg>
+                                                        <i data-lucide="user-minus" class="w-4 h-4"></i>
                                                     </button>
                                                 </form>
                                             @endif
@@ -238,6 +253,46 @@
                 });
         }
 
+        // Clock & Greeting Functions
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greeting = '';
+
+            if (hour >= 5 && hour < 12) greeting = 'Selamat Pagi';
+            else if (hour >= 12 && hour < 15) greeting = 'Selamat Siang';
+            else if (hour >= 15 && hour < 18) greeting = 'Selamat Sore';
+            else greeting = 'Selamat Malam';
+
+            document.getElementById('greeting').textContent = greeting;
+        }
+
+        function updateClock() {
+            const now = new Date();
+
+            // Time
+            const timeStr = now.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('current-time').textContent = timeStr;
+
+            // Date
+            const dateStr = now.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            document.getElementById('current-date').textContent = dateStr;
+        }
+
+        // Initialize Clock
+        updateGreeting();
+        updateClock();
+        setInterval(updateClock, 1000);
+        setInterval(updateGreeting, 60000);
+
         function renderTable(users) {
             if (users.length === 0) {
                 tableBody.innerHTML = `
@@ -271,13 +326,13 @@
                 <td class="px-6 py-4">
                     ${user.is_active
                         ? `<div class="flex items-center space-x-2">
-                                        <div class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
-                                        <span class="text-sm font-medium text-green-600">Aktif</span>
-                                    </div>`
+                                                                                    <div class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
+                                                                                    <span class="text-sm font-medium text-green-600">Aktif</span>
+                                                                                </div>`
                         : `<div class="flex items-center space-x-2">
-                                        <div class="w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
-                                        <span class="text-sm font-medium text-gray-400">Nonaktif</span>
-                                    </div>`
+                                                                                    <div class="w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
+                                                                                    <span class="text-sm font-medium text-gray-400">Nonaktif</span>
+                                                                                </div>`
                     }
                 </td>
                 <td class="px-6 py-4">
@@ -300,17 +355,17 @@
                             </button>
                         </form>
                         ${user.is_active ? `
-                                    <form action="${user.delete_url}" method="POST">
-                                        <input type="hidden" name="_token" value="${csrfToken}">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit"
-                                            class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-red-500 transition-all duration-200" title="Nonaktifkan">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
-                                            </svg>
-                                        </button>
-                                    </form>` : ''
+                                                                                <form action="${user.delete_url}" method="POST">
+                                                                                    <input type="hidden" name="_token" value="${csrfToken}">
+                                                                                    <input type="hidden" name="_method" value="DELETE">
+                                                                                    <button type="submit"
+                                                                                        class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-red-500 transition-all duration-200" title="Nonaktifkan">
+                                                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                                                d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
+                                                                                        </svg>
+                                                                                    </button>
+                                                                                </form>` : ''
                         }
                     </div>
                 </td>

@@ -6,7 +6,7 @@
 @section('content')
     <div class="min-h-screen" style="background: linear-gradient(135deg, #fdf2f4, #f8fafc);">
         @include('components.sidebar')
-
+        @include('components.alert')
         <div class="md:ml-64 p-8">
 
             {{-- HEADER --}}
@@ -18,7 +18,7 @@
             </div>
 
             {{-- FORM CARD --}}
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden max-w-lg">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
 
                 <div class="px-6 py-4"
                     style="background: linear-gradient(to right, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
