@@ -59,7 +59,7 @@ class AuthController extends Controller
         $activeRole = $user->default_role ?? $user->roles->first()?->name;
         session(['active_role' => $activeRole]);
 
-        return $this->redirectByRole($activeRole);
+        return $this->redirectByRole($activeRole)->with('success', 'Berhasil login.');
     }
 
     public function logout(Request $request)
@@ -68,7 +68,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'Berhasil logout.');
     }
 
     public function showResetPassword()
@@ -92,7 +92,7 @@ class AuthController extends Controller
         $activeRole = $user->default_role ?? $user->roles->first()?->name;
         session(['active_role' => $activeRole]);
 
-        return $this->redirectByRole($activeRole);
+        return $this->redirectByRole($activeRole)->with('success', 'Password berhasil diubah.');
     }
 
 
@@ -122,6 +122,6 @@ class AuthController extends Controller
         }
 
         session(['active_role' => $role]);
-        return $this->redirectByRole($role);
+        return $this->redirectByRole($role)->with('success', 'Berhasil switch role ke ' . $role);
     }
 }

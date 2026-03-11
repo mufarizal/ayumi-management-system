@@ -1,110 +1,185 @@
 @extends('layouts.app')
 @section('content')
-    <div
-        class="relative min-h-screen flex items-center justify-center
-            bg-gradient-to-br from-[#eaeaea] via-[#f1f1f1] to-[#afafaf] overflow-hidden">
+    @include('components.alert')
+    <div class="min-h-screen flex items-center justify-center bg-[#f8f4f4] px-6">
 
-        {{-- Background Glow --}}
-        <div class="absolute inset-0">
-            <div class="absolute top-10 left-10 w-72 h-72 bg-[#3a3a3a]/20 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 right-10 w-96 h-96 bg-[#9ca3af]/10 rounded-full blur-3xl"></div>
-            <div class="absolute top-1/2 left-1/3 w-64 h-64 bg-[#4a4a4a]/20 rounded-full blur-2xl"></div>
-        </div>
+        <div class="w-full max-w-6xl flex rounded-3xl overflow-hidden shadow-2xl">
 
-        <div class="relative z-10 w-full max-w-md px-6">
-            {{-- Card --}}
-            <div
-                class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-10
-                    transition-all duration-500 hover:-translate-y-1">
+            {{-- LEFT PANEL --}}
+            <div class="hidden lg:flex w-1/2 relative overflow-hidden items-center px-16 py-20"
+                style="background: linear-gradient(135deg,var(--color-accent-gradient-1),var(--color-accent-gradient-2));">
 
-                {{-- Logo --}}
-                <div class="text-center mb-8">
-                    {{-- <div
-                        class="mx-auto mb-4 w-16 h-16 rounded-2xl
-                            bg-linear-to-r from-[#111111] to-[#3a3a3a]
-                            flex items-center justify-center shadow-lg">
-                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                        </svg>
-                    </div> --}}
+                {{-- ORBS --}}
+                <div class="absolute -top-20 -left-20 w-96 h-96 rounded-full blur-[90px] opacity-40"
+                    style="background:#c0132a"></div>
 
-                    <h2
-                        class="text-3xl font-bold
-                           bg-gradient-to-r from-[#111111] to-[#3a3a3a]
-                           bg-clip-text text-transparent">
-                        いらっしゃいませ
-                    </h2>
-                    <p class="text-gray-600 text-sm mt-2">
-                        Please sign in to your account
+                <div class="absolute -bottom-20 -right-20 w-96 h-96 rounded-full blur-[90px] opacity-40"
+                    style="background:#5a0009"></div>
+
+                <div class="absolute top-1/2 left-[60%] w-56 h-56 rounded-full blur-[80px] opacity-20"
+                    style="background:#ff4d6d"></div>
+
+                <div class="relative z-10 text-white max-w-md">
+
+                    {{-- LOGO --}}
+                    <div class="flex  gap-3 mb-10">
+                        <div
+                            class="w-16 h-16 p-2 flex items-center justify-center rounded-xl backdrop-blur-md border border-white/30 bg-white/20">
+                            <img src="/logo.png" alt="Ayumi Logo">
+                        </div>
+
+                        <div class="flex flex-col items-center ">
+                            <span class="font-serif text-2xl font-semibold">
+                                Ayumi Nihonggo Gakkou
+                            </span>
+                            {{-- TAG --}}
+                            <div
+                                class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/20 border border-white/30 backdrop-blur mb-6">
+                                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                                <span class="text-xs uppercase tracking-wider">
+                                    Sistem Manajemen Internal
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {{-- HEADING --}}
+                    <h1 class="text-3xl  mb-6">
+                        Kelola Keuangan & Laporan <br>
+                        <span class="italic text-white/70">Lebih Efisien</span>
+                    </h1>
+
+                    <p class="text-white/70 leading-relaxed mb-10">
+                        Sistem manajemen Ayumi Nihonggo Gakkou membantu mengelola kelas,
+                        pengajar, dan aktivitas pembelajaran dengan lebih terstruktur
+                        dalam satu platform.
                     </p>
-                </div>
 
-                @include('components.alert')
+                    {{-- STATS --}}
+                    <div class="flex items-center gap-8">
 
-                {{-- Form --}}
-                <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
-                    @csrf
+                        <div>
+                            <p class="text-3xl font-bold">500+</p>
+                            <span class="text-white/60 text-sm">Siswa Aktif</span>
+                        </div>
 
-                    {{-- Email --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Email
-                        </label>
-                        <input type="email" name="email" value="{{ old('email') }}" required
-                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200
-                               focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20
-                               transition duration-300 outline-none"
-                            placeholder="Masukkan email Anda">
+                        <div class="w-px h-8 bg-white/20"></div>
+
+                        <div>
+                            <p class="text-3xl font-bold">30+</p>
+                            <span class="text-white/60 text-sm">Kelas Berjalan</span>
+                        </div>
+
+                        <div class="w-px h-8 bg-white/20"></div>
+
+                        <div>
+                            <p class="text-3xl font-bold">10+</p>
+                            <span class="text-white/60 text-sm">Pengajar</span>
+                        </div>
+
                     </div>
 
-                    {{-- Password --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Password
-                        </label>
-                        <input type="password" name="password" required
-                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200
-                               focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20
-                               transition duration-300 outline-none"
-                            placeholder="*********">
-                    </div>
-
-                    {{-- Remember + Forgot --}}
-                    <div class="flex items-center justify-between text-sm">
-                        <label class="flex items-center space-x-2 text-gray-600">
-                            <input type="checkbox" name="remember"
-                                class="w-4 h-4 text-[#111111] border-gray-300 rounded
-                                      focus:ring-[#111111] focus:ring-2">
-                            <span>Remember me</span>
-                        </label>
-
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}"
-                                class="text-[#3a3a3a] hover:text-[#111111] font-medium transition">
-                                Forgot Password?
-                            </a>
-                        @endif
-                    </div>
-
-                    {{-- Submit --}}
-                    <button type="submit"
-                        class="w-full py-3 rounded-xl font-semibold text-white
-                           bg-linear-to-r from-[#7c0000] to-[#540000]
-                           hover:from-black hover:to-[#111111]
-                           transition-all duration-300
-                           hover:-translate-y-1 hover:shadow-xl
-                           active:scale-95">
-                        Sign In
-                    </button>
-                </form>
-                {{-- Footer --}}
-                <div class="mt-8 text-center text-xs text-gray-400">
-                    Protected by secure authentication
                 </div>
             </div>
 
 
+            {{-- RIGHT PANEL --}}
+            <div class="flex flex-1 items-center justify-center p-12 bg-white">
+
+                <div class="w-full max-w-md">
+
+                    <div class="mb-8">
+
+                        <p class="uppercase text-xs tracking-widest mb-3" style="color:var(--color-primary)">
+                            いらっしゃいませ
+                        </p>
+
+                        <h2 class="text-3xl font-bold text-gray-700 mb-2">
+                            Welcome Back
+                        </h2>
+
+                        <p class="text-sm text-gray-500">
+                            Silakan login untuk mengakses fitur dan data Anda.
+                        </p>
+
+                    </div>
+
+
+                    <form action="{{ route('login.post') }}" method="POST" class="space-y-5">
+                        @csrf
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Email
+                            </label>
+                            <input type="email" name="email" value="{{ old('email') }}" required
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200
+                               focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20
+                               transition duration-300 outline-none"
+                                placeholder="Masukkan email Anda">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Password
+                            </label>
+                            <input type="password" name="password" required
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200
+                               focus:border-[#111111] focus:ring-2 focus:ring-[#111111]/20
+                               transition duration-300 outline-none"
+                                placeholder="*********">
+                        </div>
+
+                        {{-- Remember + Forgot --}}
+                        <div class="flex items-center justify-between text-sm">
+                            <label class="flex items-center space-x-2 text-gray-600">
+                                <input type="checkbox" name="remember"
+                                    class="w-4 h-4 text-[#7c0000] border-gray-300 rounded
+                                      focus:ring-[#7c0000] focus:ring-2">
+                                <span>Ingatkan Saya</span>
+                            </label>
+
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}"
+                                    class="text-[#7c0000] hover:text-[#540000] font-medium transition">
+                                    Lupa Password?
+                                </a>
+                            @endif
+                        </div>
+
+                        <hr class="border-gray-200">
+
+                        <button type="submit"
+                            class="w-full py-3 rounded-xl font-semibold text-white
+                           bg-linear-to-r from-[#7c0000] to-[#540000]
+                           transition-all duration-300
+                           hover:-translate-y-1 hover:shadow-xl
+                           active:scale-95">
+                            Masuk
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
+
+
+    <script>
+        function togglePw() {
+
+            const input = document.getElementById("password")
+
+            input.type =
+                input.type === "password" ?
+                "text" :
+                "password"
+
+        }
+    </script>
 @endsection
