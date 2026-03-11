@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('password');
             $table->boolean('is_active')->default(true);
             $table->boolean('must_change_password')->default(true);
+            $table->string('default_role')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->rememberToken();
             $table->timestamps();

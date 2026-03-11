@@ -1,15 +1,16 @@
 @php
 
-    $isAdmin = auth()->check() && auth()->user()->hasRole('admin');
-    $isPengajar = auth()->check() && auth()->user()->hasRole('pengajar');
-    $isStaff = auth()->check() && auth()->user()->hasRole('staff');
-    $isSiswa = auth()->check() && auth()->user()->hasRole('siswa');
+    $activeRole = auth()->user()->getActiveRole();
 
-    $roleLabel = match (true) {
-        $isAdmin => 'Administrator',
-        $isPengajar => 'Pengajar',
-        $isStaff => 'Staff',
-        $isSiswa => 'Siswa',
+    $isAdmin = $activeRole === 'admin';
+    $isPengajar = $activeRole === 'pengajar';
+    $isStaff = $activeRole === 'staff';
+    $isSiswa = $activeRole === 'siswa';
+    $roleLabel = match ($activeRole) {
+        'admin' => 'Administrator',
+        'pengajar' => 'Pengajar',
+        'staff' => 'Staff',
+        'siswa' => 'Siswa',
         default => 'User',
     };
     $userMenus = [
@@ -147,6 +148,68 @@
             <span class="w-2 h-2 rounded-full shrink-0"
                 style="background: #34d399; box-shadow: 0 0 6px #34d399;"></span>
         </div>
+        @php $userRolesList = auth()->user()->roles; @endphp
+        @if ($userRolesList->count() > 1)
+            <div class="mx-3 mb-2 mt-2" x-data="{ openRole: false }">
+                <p class="text-[10px] uppercase font-semibold opacity-40 px-1 mb-1.5 tracking-wider">Pindah Tampilan</p>
+
+                <div class="relative">
+                    {{-- Trigger button — tampilkan role aktif --}}
+                    <button @click="openRole = !openRole"
+                        class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] font-medium text-white transition-all duration-200"
+                        style="background: linear-gradient(to right, #87010e, #eb255d);">
+                        @php
+                            $activeIcon = match ($activeRole) {
+                                'admin' => 'shield-check',
+                                'pengajar' => 'graduation-cap',
+                                'staff' => 'briefcase',
+                                'siswa' => 'book-open',
+                                default => 'user',
+                            };
+                        @endphp
+                        <i data-lucide="{{ $activeIcon }}" class="w-3.5 h-3.5 shrink-0"></i>
+                        <span>{{ ucfirst($activeRole) }}</span>
+                        <span class="ml-auto text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full">Aktif</span>
+                        <i data-lucide="chevron-down" class="w-3 h-3 shrink-0 transition-transform duration-200"
+                            :class="openRole ? 'rotate-180' : ''"></i>
+                    </button>
+
+                    {{-- Dropdown list --}}
+                    <div x-show="openRole" @click.away="openRole = false"
+                        x-transition:enter="transition ease-out duration-150"
+                        x-transition:enter-start="opacity-0 -translate-y-1"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 -translate-y-1"
+                        class="absolute left-0 right-0 mt-1 rounded-xl overflow-hidden shadow-lg z-50"
+                        style="display:none; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(12px);">
+                        @foreach ($userRolesList as $r)
+                            @if ($activeRole !== $r->name)
+                                <form method="POST" action="{{ route('switch.role') }}">
+                                    @csrf
+                                    <input type="hidden" name="role" value="{{ $r->name }}">
+                                    <button type="submit"
+                                        class="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium opacity-60 hover:opacity-100 hover:bg-white/10 transition-all duration-200">
+                                        @php
+                                            $icon = match ($r->name) {
+                                                'admin' => 'shield-check',
+                                                'pengajar' => 'graduation-cap',
+                                                'staff' => 'briefcase',
+                                                'siswa' => 'book-open',
+                                                default => 'user',
+                                            };
+                                        @endphp
+                                        <i data-lucide="{{ $icon }}" class="w-3.5 h-3.5 shrink-0"></i>
+                                        <span>{{ ucfirst($r->name) }}</span>
+                                    </button>
+                                </form>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <nav class="flex-1 overflow-y-auto px-3 py-3 space-y-0.5 sidebar-scroll">
 

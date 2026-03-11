@@ -84,4 +84,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/reset/password', [AuthController::class, 'showResetPassword'])->name('view.reset');
     Route::post('/reset/password', [AuthController::class, 'resetPassword'])->name('post.reset');
+    Route::post('/switch-role', [AuthController::class, 'switchRole'])->name('switch.role');
 });

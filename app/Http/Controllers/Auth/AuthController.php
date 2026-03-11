@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
 
 class AuthController extends Controller
 {
@@ -20,33 +22,49 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Cek email dulu
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'Email tidak terdaftar.'
+            ])->withInput();
+        }
+
+        if (!$user->is_active) {
+            return back()->withErrors([
+                'email' => 'Akun tidak aktif.'
+            ])->withInput();
+        }
+
         if (
             !Auth::attempt([
                 'email' => $request->email,
                 'password' => $request->password,
-                'is_active' => true
+                'is_active' => true,
             ])
         ) {
             return back()->withErrors([
-                'email' => 'Email / Password salah atau akun tidak aktif.'
-            ]);
+                'email' => 'Password salah.'
+            ])->withInput();
         }
 
         $request->session()->regenerate();
-
         $user = Auth::user();
 
         if ($user->must_change_password) {
             return redirect()->route('view.reset');
         }
 
-        return $this->redirectByRole($user);
+        $activeRole = $user->default_role ?? $user->roles->first()?->name;
+        session(['active_role' => $activeRole]);
+
+        return $this->redirectByRole($activeRole);
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -71,27 +89,39 @@ class AuthController extends Controller
             'must_change_password' => false,
         ]);
 
-        return $this->redirectByRole($user);
+        $activeRole = $user->default_role ?? $user->roles->first()?->name;
+        session(['active_role' => $activeRole]);
+
+        return $this->redirectByRole($activeRole);
     }
 
-    private function redirectByRole($user)
+
+    public function redirectByRole($role)
     {
-        if ($user->hasRole('admin')) {
-            return redirect()->route('admin.dashboard');
+        return match ($role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'pengajar' => redirect()->route('pengajar.dashboard'),
+            'staff' => redirect()->route('staff.dashboard'),
+            'siswa' => redirect()->route('siswa.dashboard'),
+            default => abort(403),
+        };
+    }
+
+    public function switchRole(Request $request)
+    {
+        $request->validate([
+            'role' => 'required|string'
+        ]);
+
+        $user = Auth::user();
+        $role = $request->role;
+
+        $user = $request->user();
+        if (!$user || !$user->hasRole($role)) {
+            abort(403, 'Anda tidak memiliki peran pada role tersebut.');
         }
 
-        if ($user->hasRole('pengajar')) {
-            return redirect()->route('pengajar.dashboard');
-        }
-
-        if ($user->hasRole('staff')) {
-            return redirect()->route('staff.dashboard');
-        }
-
-        if ($user->hasRole('siswa')) {
-            return redirect()->route('siswa.dashboard');
-        }
-
-        abort(403);
+        session(['active_role' => $role]);
+        return $this->redirectByRole($role);
     }
 }

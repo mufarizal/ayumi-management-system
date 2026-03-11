@@ -4,30 +4,37 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next, string $role): Response
     {
+        /** @var \App\Models\User $user */
         $user = $request->user();
 
         if (!$user) {
-            abort(403);
+            return redirect()->route('login');
         }
 
-        foreach ($roles as $role) {
-            if ($user->hasRole($role)) {
-                return $next($request);
-            }
+        if (!$user->hasRole($role)) {
+            abort(403, 'Anda tidak memiliki akses.');
         }
 
-        abort(403);
+        $activeRole = session('active_role')
+            ?? $user->default_role
+            ?? $user->roles->first()?->name;
+
+        if ($activeRole !== $role) {
+            return match ($activeRole) {
+                'admin' => redirect()->route('admin.dashboard'),
+                'pengajar' => redirect()->route('pengajar.dashboard'),
+                'staff' => redirect()->route('staff.dashboard'),
+                'siswa' => redirect()->route('siswa.dashboard'),
+                default => abort(403),
+            };
+        }
+
+        return $next($request);
     }
 }

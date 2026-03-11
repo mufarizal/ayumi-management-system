@@ -22,7 +22,8 @@ class User extends Authenticatable
         'password',
         'is_active',
         'created_by',
-        'must_change_password'
+        'must_change_password',
+        'default_role',
     ];
 
     /**
@@ -65,5 +66,15 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->hasRole('admin');
+    }
+
+    public function hasAnyRole(array $roles)
+    {
+        return $this->roles()->whereIn('name', $roles)->exists();
+    }
+
+    public function getActiveRole()
+    {
+        return session('active_role')?? $this->default_role ?? $this->roles()->first()?->name ?? 'siswa';
     }
 }

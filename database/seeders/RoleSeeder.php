@@ -19,5 +19,6 @@ class RoleSeeder extends Seeder
             ['name'=>'pengajar'],
             ['name'=>'siswa'],
         ]);
+        
     }
 }
