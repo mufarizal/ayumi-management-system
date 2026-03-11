@@ -10,52 +10,71 @@
 
             {{-- HEADER --}}
             <div class="">
-                {{-- Content --}}
-                <div class="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    {{-- Left Section --}}
-                    <div>
-                        <h1 class="text-3xl font-bold text-black mb-2">
-                            {{ $role ? 'Data ' . ucfirst($role) : 'Semua User' }}
-                        </h1>
+                <div class="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-                        <div class="flex flex-wrap items-center gap-3 sm:gap-4">
-                            {{-- Total Users --}}
-                            <div class="flex items-center space-x-2 bg-black/5 px-4 py-2 rounded-lg backdrop-blur-sm">
-                                <i data-lucide="users" class="w-4 h-4 text-black"></i>
-                                <span class="text-black/70 text-sm">Total:</span>
-                                <span class="text-black font-semibold" id="total-count">{{ $users->total() }}</span>
-                            </div>
+                    {{-- Title Group --}}
+                    <div class="flex items-center gap-3 ">
+                        {{-- Pulse indicator --}}
+                        <div
+                            class="relative flex items-center justify-center w-12 h-12  outline outline-gray-400 rounded-2xl">
+                            @php
+                                $roleIcons = [
+                                    'admin' => 'shield-check',
+                                    'pengajar' => 'graduation-cap',
+                                    'staff' => 'briefcase',
+                                    'siswa' => 'book-open',
+                                ];
 
-                            {{-- Online Status --}}
-                            <div class="flex items-center space-x-2 bg-black/5 px-4 py-2 rounded-lg backdrop-blur-sm">
-                                <div class="w-2 h-2 bg-[#2faf00] rounded-full animate-pulse"></div>
-                                <span class="text-black text-sm font-medium">Online</span>
-                            </div>
+                                $icon = $roleIcons[$role] ?? 'users';
+                            @endphp
+
+                            <i data-lucide="{{ $icon }}" class="w-5 h-5 text-gray-800"></i>
+                        </div>
+
+                        {{-- Title & breadcrumb --}}
+                        <div>
+                            <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-0.5">Manajemen Pengguna
+                            </p>
+                            <h1 class="text-2xl font-bold text-gray-800 leading-tight">
+                                {{ $role ? 'Data ' . ucfirst($role) : 'Semua User' }}
+                            </h1>
                         </div>
                     </div>
 
-                    {{-- Right Section - Clock --}}
-                    <div
-                        class="w-full lg:w-auto text-left lg:text-right bg-black/1 backdrop-blur-sm px-4 md:px-6 py-4 rounded-xl border border-black/20">
-                        <div class="flex">
-                            {{-- Greeting --}}
-                            <p id="greeting" class="text-sm text-black/80 mb-2 hidden"></p>
+                    <div class="flex items-center gap--2">
+                        <div class="text-right">
+                            <p id="greeting" class="text-sm font-medium text-gray-600 mb-0.5 hidden">Selamat Datang</p>
+                            <p id="current-time" class="text-sm font-medium text-gray-400"></p>
+                            <p id="current-date" class="text-sm font-medium text-gray-400 -mt-0.5"></p>
+                            {{-- <span class="text-black font-semibold" id="total-count">{{ $users->total() }}</span> --}}
 
-                            <div>{{-- Time --}}
-                                <p id="current-time" class="text-2xl font-bold text-black mb-1 tabular-nums"></p>
-
-                                {{-- Date --}}
-                                <p id="current-date" class="text-sm text-black/70"></p>
-                            </div>
                         </div>
+
+                        <div class="w-0.5 h-6 bg-gray-300 mx-4 hidden sm:block">
+
+                        </div>
+
+                        {{-- Action Button --}}
+                        @if ($role)
+                            <a href="{{ route('admin.users.create', $role) }}"
+                                class="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm w-full sm:w-auto justify-center"
+                                style="background: linear-gradient(135deg, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
+
+
+                                {{-- Icon with subtle spin on hover --}}
+                                <i data-lucide="plus"
+                                    class="w-4 h-4 transition-transform duration-300 group-hover:rotate-90"></i>
+                                <span>Tambah Data</span>
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
 
             <hr class="my-5 border-gray-200">
 
-            {{-- TABEL --}}
-            <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between mb-6">
+            {{-- PENCARIAN --}}
+            <div class="flex mb-5 flex-col gap-4 xl:flex-row xl:items-center xl:justify-between ">
                 <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
                     <div class="relative w-full sm:max-w-md">
                         {{-- <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i> --}}
@@ -77,22 +96,6 @@
                         <span>Reset</span>
                     </button>
                 </div>
-
-                <div class="flex w-full sm:w-auto gap-2 items-center">
-                    {{-- Tambah User --}}
-                    @if ($role)
-                        <a href="{{ route('admin.users.create', $role) }}"
-                            class="w-full sm:w-auto flex items-center justify-center space-x-2 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                            style="background: linear-gradient(to right, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="font-semibold">Tambah {{ ucfirst($role) }}</span>
-                        </a>
-                    @endif
-                </div>
             </div>
 
             {{-- TABEL --}}
@@ -103,6 +106,7 @@
                     <h2 class="text-xl font-bold text-white">
                         {{ $role ? 'Daftar ' . ucfirst($role) : 'Semua User' }}
                     </h2>
+                    <span class="text-gray-200 text-sm" id="total-count">Total: {{ $users->total() }}</span>
                     {{-- Loading indicator — muncul saat Ajax sedang berjalan --}}
                     <p id="search-status" class="text-white/70 text-sm mt-0.5 hidden">Mencari...</p>
                 </div>
@@ -116,15 +120,15 @@
                                 <th class="px-3 md:px-6 py-4 text-left text-sm font-semibold text-white">Email</th>
                                 <th class="px-3 md:px-6 py-4 text-left text-sm font-semibold text-white">Role</th>
                                 <th class="px-3 md:px-6 py-4 text-left text-sm font-semibold text-white">Status</th>
-                                <th class="px-3 md:px-6 py-4 text-left text-sm font-semibold text-white">Created At</th>
-                                <th class="px-3 md:px-6 py-4 text-left text-sm font-semibold text-white">Created By</th>
+                                {{-- <th class="px-3 md:px-6 py-4 text-left text-sm font-semibold text-white">Created At</th> --}}
+                                <th class="px-3 md:px-6 py-4 text-left text-sm font-semibold text-white">Dibuat oleh</th>
                                 <th class="px-3 md:px-6 py-4 text-left text-sm font-semibold text-white">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="user-table-body" class="divide-y divide-gray-200">
                             @forelse($users as $i => $user)
                                 <tr class="hover:bg-gray-50 transition-all duration-300">
-                                    <td class="px-3 md:px-6 py-4 text-gray-900 font-medium whitespace-nowrap">
+                                    <td class="px-3 md:px-6 py-4 text-gray-500 font-medium whitespace-nowrap">
                                         {{ $users->firstItem() + $i }}
                                     </td>
                                     <td class="px-3 md:px-6 py-4" style="min-width: 200px;">
@@ -165,9 +169,9 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td class="px-3 md:px-6 py-4 text-gray-600 whitespace-nowrap">
+                                    {{-- <td class="px-3 md:px-6 py-4 text-gray-600 whitespace-nowrap">
                                         {{ optional($user->created_at)->format('d M Y H:i') ?? '-' }}
-                                    </td>
+                                    </td> --}}
                                     <td class="px-3 md:px-6 py-4 text-gray-600 whitespace-nowrap">
                                         {{ $user->creator?->name ?? '-' }}
                                     </td>
@@ -253,7 +257,7 @@
                 .then(res => res.json())
                 .then(data => {
                     searchStatus.classList.add('hidden');
-                    totalCount.textContent = `Total: ${data.users.length} pengguna`;
+                    totalCount.textContent = `Total: ${data.users.length}`;
 
                     paginationWrapper.style.display = keyword ? 'none' : 'block';
 
@@ -337,13 +341,13 @@
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
                     ${user.is_active
                         ? `<div class="flex items-center space-x-2">
-                                                                                                            <div class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
-                                                                                                            <span class="text-sm font-medium text-green-600">Aktif</span>
-                                                                                                        </div>`
+                                                                                                                <div class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
+                                                                                                                <span class="text-sm font-medium text-green-600">Aktif</span>
+                                                                                                            </div>`
                         : `<div class="flex items-center space-x-2">
-                                                                                                            <div class="w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
-                                                                                                            <span class="text-sm font-medium text-gray-400">Nonaktif</span>
-                                                                                                        </div>`
+                                                                                                                <div class="w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
+                                                                                                                <span class="text-sm font-medium text-gray-400">Nonaktif</span>
+                                                                                                            </div>`
                     }
                 </td>
                 <td class="px-3 md:px-6 py-4 text-gray-600 whitespace-nowrap">${user.created_at ?? '-'}</td>
@@ -368,17 +372,17 @@
                             </button>
                         </form>
                         ${user.is_active ? `
-                                                                                                        <form action="${user.delete_url}" method="POST">
-                                                                                                            <input type="hidden" name="_token" value="${csrfToken}">
-                                                                                                            <input type="hidden" name="_method" value="DELETE">
-                                                                                                            <button type="submit"
-                                                                                                                class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-red-500 transition-all duration-200" title="Nonaktifkan">
-                                                                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                                                                        d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
-                                                                                                                </svg>
-                                                                                                            </button>
-                                                                                                        </form>` : ''
+                                                                                                            <form action="${user.delete_url}" method="POST">
+                                                                                                                <input type="hidden" name="_token" value="${csrfToken}">
+                                                                                                                <input type="hidden" name="_method" value="DELETE">
+                                                                                                                <button type="submit"
+                                                                                                                    class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-red-500 transition-all duration-200" title="Nonaktifkan">
+                                                                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                                                                            d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
+                                                                                                                    </svg>
+                                                                                                                </button>
+                                                                                                            </form>` : ''
                         }
                     </div>
                 </td>
