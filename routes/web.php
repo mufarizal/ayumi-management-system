@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\PengajarController;
+use App\Http\Controllers\Admin\SiswaController;
+use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +37,14 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/delete/{user}', [UserController::class, 'destroy'])->name('delete');
             Route::post('/{user}/reset-password', [UserController::class, 'resetPasswordAdmin'])->name('reset');
         });
+
+
+        // ======================
+        // STAFF & PENGAJAR MANAGEMENT
+        // ======================
+        Route::resource('siswa', SiswaController::class);
+        Route::resource('staff', StaffController::class);
+        Route::resource('pengajar', PengajarController::class);
 
         // ======================
         // ACADEMIC

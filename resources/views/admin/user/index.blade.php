@@ -19,7 +19,7 @@
                             class="relative flex items-center justify-center w-12 h-12  outline outline-gray-400 rounded-2xl">
                             @php
                                 $roleIcons = [
-                                    'admin' => 'shield-check',
+                                    'admin' => 'users',
                                     'pengajar' => 'graduation-cap',
                                     'staff' => 'briefcase',
                                     'siswa' => 'book-open',
@@ -164,8 +164,8 @@
                                             </div>
                                         @else
                                             <div class="flex items-center space-x-2">
-                                                <div class="w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
-                                                <span class="text-sm font-medium text-gray-400">Nonaktif</span>
+                                                <div class="w-2.5 h-2.5 bg-red-300 rounded-full"></div>
+                                                <span class="text-sm font-medium text-red-500">Nonaktif</span>
                                             </div>
                                         @endif
                                     </td>
@@ -177,12 +177,12 @@
                                     </td>
                                     <td class="px-3 md:px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center space-x-2">
-                                            <a href="{{ route('admin.users.edit', $user) }}"
+                                            <a href="{{ route('admin.users.edit', encrypt($user->id)) }}"
                                                 class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-green-500 transition-all duration-200"
                                                 title="Edit">
                                                 <i data-lucide="edit" class="w-4 h-4"></i>
                                             </a>
-                                            <form action="{{ route('admin.users.reset', $user) }}" method="POST">
+                                            <form action="{{ route('admin.users.reset', encrypt($user->id)) }}" method="POST">
                                                 @csrf
                                                 <button type="submit"
                                                     class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-blue-500 transition-all duration-200"
@@ -191,7 +191,7 @@
                                                 </button>
                                             </form>
                                             @if ($user->is_active)
-                                                <form action="{{ route('admin.users.delete', $user) }}" method="POST">
+                                                <form action="{{ route('admin.users.delete', $user->id ) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
@@ -268,46 +268,6 @@
                 });
         }
 
-        // Clock & Greeting Functions
-        function updateGreeting() {
-            const hour = new Date().getHours();
-            let greeting = '';
-
-            if (hour >= 5 && hour < 12) greeting = 'Selamat Pagi';
-            else if (hour >= 12 && hour < 15) greeting = 'Selamat Siang';
-            else if (hour >= 15 && hour < 18) greeting = 'Selamat Sore';
-            else greeting = 'Selamat Malam';
-
-            document.getElementById('greeting').textContent = greeting;
-        }
-
-        function updateClock() {
-            const now = new Date();
-
-            // Time
-            const timeStr = now.toLocaleTimeString('id-ID', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            document.getElementById('current-time').textContent = timeStr;
-
-            // Date
-            const dateStr = now.toLocaleDateString('id-ID', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            document.getElementById('current-date').textContent = dateStr;
-        }
-
-        // Initialize Clock
-        updateGreeting();
-        updateClock();
-        setInterval(updateClock, 1000);
-        setInterval(updateGreeting, 60000);
-
         function renderTable(users) {
             if (users.length === 0) {
                 tableBody.innerHTML = `
@@ -341,13 +301,13 @@
                 <td class="px-3 md:px-6 py-4 whitespace-nowrap">
                     ${user.is_active
                         ? `<div class="flex items-center space-x-2">
-                                                                                                                <div class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
-                                                                                                                <span class="text-sm font-medium text-green-600">Aktif</span>
-                                                                                                            </div>`
+                                                                                                                    <div class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
+                                                                                                                    <span class="text-sm font-medium text-green-600">Aktif</span>
+                                                                                                                </div>`
                         : `<div class="flex items-center space-x-2">
-                                                                                                                <div class="w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
-                                                                                                                <span class="text-sm font-medium text-gray-400">Nonaktif</span>
-                                                                                                            </div>`
+                                                                                                                    <div class="w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
+                                                                                                                    <span class="text-sm font-medium text-gray-400">Nonaktif</span>
+                                                                                                                </div>`
                     }
                 </td>
                 <td class="px-3 md:px-6 py-4 text-gray-600 whitespace-nowrap">${user.created_at ?? '-'}</td>
@@ -372,17 +332,17 @@
                             </button>
                         </form>
                         ${user.is_active ? `
-                                                                                                            <form action="${user.delete_url}" method="POST">
-                                                                                                                <input type="hidden" name="_token" value="${csrfToken}">
-                                                                                                                <input type="hidden" name="_method" value="DELETE">
-                                                                                                                <button type="submit"
-                                                                                                                    class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-red-500 transition-all duration-200" title="Nonaktifkan">
-                                                                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                                                                            d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
-                                                                                                                    </svg>
-                                                                                                                </button>
-                                                                                                            </form>` : ''
+                                                                                                                <form action="${user.delete_url}" method="POST">
+                                                                                                                    <input type="hidden" name="_token" value="${csrfToken}">
+                                                                                                                    <input type="hidden" name="_method" value="DELETE">
+                                                                                                                    <button type="submit"
+                                                                                                                        class="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-red-500 transition-all duration-200" title="Nonaktifkan">
+                                                                                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                                                                                d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
+                                                                                                                        </svg>
+                                                                                                                    </button>
+                                                                                                                </form>` : ''
                         }
                     </div>
                 </td>

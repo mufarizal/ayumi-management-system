@@ -75,6 +75,21 @@ class User extends Authenticatable
 
     public function getActiveRole()
     {
-        return session('active_role')?? $this->default_role ?? $this->roles()->first()?->name ?? 'siswa';
+        return session('active_role') ?? $this->default_role ?? $this->roles()->first()?->name ?? 'siswa';
+    }
+
+    public function siswa()
+    {
+        return $this->hasOne(Siswa::class);
+    }
+
+    public function staff()
+    {
+        return $this->hasOne(Staff::class);
+    }
+
+    public function pengajar()
+    {
+        return $this->hasOne(Pengajar::class);
     }
 }

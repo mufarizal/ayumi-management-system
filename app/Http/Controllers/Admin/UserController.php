@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pengajar;
 use App\Models\Role;
+use App\Models\Siswa;
+use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -84,9 +88,14 @@ class UserController extends Controller
         ]);
 
         if (!in_array($request->default_role, $request->roles)) {
-            return back()->withErrors(['default_role' => 'Default role harus salah satu dari role yang dipilih.'])->withInput();
+            return back()->withErrors([
+                'default_role' => 'Default role harus salah satu dari role yang dipilih.'
+            ])->withInput();
         }
 
+        // ======================
+        // CREATE USER
+        // ======================
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -97,22 +106,56 @@ class UserController extends Controller
             'created_by' => Auth::id(),
         ]);
 
+        // ======================
+        // ATTACH ROLES
+        // ======================
         $roleIds = Role::whereIn('name', $request->roles)->pluck('id');
         $user->roles()->attach($roleIds);
 
-        Log::info("User Created", ['user_id' => $user->id, 'createdBy' => Auth::id()]);
+        // ======================
+        // CREATE PROFILE TABLE
+        // ======================
+        switch ($request->default_role) {
 
-        // Redirect ke halaman list default_role
+            case 'siswa':
+                Siswa::create([
+                    'user_id' => $user->id
+                ]);
+                break;
+
+            case 'staff':
+                Staff::create([
+                    'user_id' => $user->id
+                ]);
+                break;
+
+            case 'pengajar':
+                Pengajar::create([
+                    'user_id' => $user->id
+                ]);
+                break;
+        }
+
+        Log::info("User Created", [
+            'user_id' => $user->id,
+            'createdBy' => Auth::id()
+        ]);
+
         return redirect()->route('admin.users.' . $request->default_role)
             ->with('success', 'User berhasil dibuat');
     }
 
-    public function edit(User $user)
+    public function edit($id)
     {
+        try {
+            $id = Crypt::decrypt($id);
+            $user = User::findOrFail($id);
+        } catch (\Exception $e) {
+            abort(404);
+        }
         $allRoles = Role::all();
         $userRoles = $user->roles->pluck('name')->toArray();
         $role = $user->default_role ?? $user->roles->first()->name ?? null;
-
         return view('admin.user.edit', compact('user', 'role', 'allRoles', 'userRoles'));
     }
 
@@ -146,11 +189,30 @@ class UserController extends Controller
             ->with('success', 'User berhasil diupdate');
     }
 
+    // public function destroy(User $user)
+    // {
+    //     $user->update(['is_active' => false]);
+    //     Log::warning("User Deactivated", ['user_id' => $user->id, 'createdBy' => Auth::id()]);
+    //     return back()->with('success', 'User dinonaktifkan');
+    // }
+
     public function destroy(User $user)
     {
-        $user->update(['is_active' => false]);
-        Log::warning("User Deactivated", ['user_id' => $user->id, 'createdBy' => Auth::id()]);
-        return back()->with('success', 'User dinonaktifkan');
+        // Nonaktifkan user
+        $user->update([
+            'is_active' => false
+        ]);
+
+        // Jika user adalah pengajar → nonaktifkan juga
+        Pengajar::where('user_id', $user->id)
+            ->update(['is_active' => false]);
+
+        Log::warning("User Deactivated", [
+            'user_id' => $user->id,
+            'createdBy' => Auth::id()
+        ]);
+
+        return back()->with('success', 'User berhasil dinonaktifkan');
     }
 
     public function resetPasswordAdmin(User $user)
