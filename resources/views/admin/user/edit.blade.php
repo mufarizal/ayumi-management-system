@@ -77,48 +77,51 @@
                             @enderror
                         </div>
 
-                        {{-- Default Role --}}
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                                Default Role
-                                <span class="text-gray-400 font-normal text-xs">(halaman pertama saat login)</span>
-                            </label>
-                            <select name="default_role" id="default_role"
-                                class="w-full px-4 py-3 rounded-xl text-sm border border-gray-200 focus:outline-none focus:border-[#87010e] bg-white transition-colors">
-                                <option value="">-- Pilih default role --</option>
-                                @foreach ($allRoles as $r)
-                                    <option value="{{ $r->name }}"
-                                        {{ old('default_role', $user->default_role) === $r->name ? 'selected' : '' }}>
-                                        {{ ucfirst($r->name) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('default_role')
-                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                            Default Role
+                            <span class="text-gray-400 font-normal text-xs">(halaman pertama saat login)</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-5">
+                            {{-- Default Role --}}
+                            <div>
+                                <select name="default_role" id="default_role"
+                                    class="w-full px-4 py-3 rounded-xl text-sm border border-gray-200 focus:outline-none focus:border-[#87010e] bg-white transition-colors">
+                                    <option value="">-- Pilih default role --</option>
+                                    @foreach ($allRoles as $r)
+                                        <option value="{{ $r->name }}"
+                                            {{ old('default_role', $user->default_role) === $r->name ? 'selected' : '' }}>
+                                            {{ ucfirst($r->name) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('default_role')
+                                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                        {{-- Status aktif --}}
-                        <div class="flex items-center gap-3 p-4 rounded-xl bg-gray-50 border border-gray-200">
-                            <input type="checkbox" name="is_active" id="is_active" {{ $user->is_active ? 'checked' : '' }}
-                                class="w-4 h-4 rounded accent-[#87010e] cursor-pointer">
-                            <label for="is_active" class="text-sm font-medium text-gray-700 cursor-pointer">
-                                User aktif
-                            </label>
+                            {{-- Status aktif --}}
+                            <div class="w-full px-4 py-3 rounded-xl text-sm border border-gray-200 focus:outline-none focus:border-[#87010e] bg-white transition-colors">
+                                <input type="checkbox" name="is_active" id="is_active"
+                                    {{ $user->is_active ? 'checked' : '' }}
+                                    class="w-4 h-4 rounded accent-[#87010e] cursor-pointer">
+                                <label for="is_active" class="text-sm font-medium text-gray-700 cursor-pointer">
+                                    User aktif
+                                </label>
+                            </div>
                         </div>
 
                         {{-- Tombol --}}
-                        <div class="flex items-center gap-3 pt-2">
+                        <div class="flex items-center justify-end gap-3 pt-2">
+                            <a href="{{ route('admin.users.' . $role) }}"
+                                class="px-6 py-3 rounded-xl text-sm font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-all duration-200">
+                                Batal
+                            </a>
                             <button type="submit"
                                 class="flex items-center gap-2 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 font-semibold"
                                 style="background: linear-gradient(to right, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
                                 <i data-lucide="save" class="w-4 h-4"></i>
                                 Update
                             </button>
-                            <a href="{{ route('admin.users.' . $role) }}"
-                                class="px-6 py-3 rounded-xl text-sm font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-all duration-200">
-                                Batal
-                            </a>
                         </div>
                     </form>
                 </div>

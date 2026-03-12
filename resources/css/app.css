@@ -87,7 +87,7 @@
 }
 
 /* ─── Slide-in animation (desktop only) ─── */
-@keyframes sidebarIn {
+/* @keyframes sidebarIn {
     from {
         opacity: 0;
         transform: translateX(-24px);
@@ -97,7 +97,7 @@
         opacity: 1;
         transform: translateX(0);
     }
-}
+} */
 
 @media (min-width: 1024px) {
     .sidebar-main {
