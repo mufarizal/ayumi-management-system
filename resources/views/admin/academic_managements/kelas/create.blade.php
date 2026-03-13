@@ -1,0 +1,177 @@
+@extends('layouts.app')
+@section('title', 'Tambah Kelas')
+
+@section('content')
+    <div class="min-h-screen" style="background: linear-gradient(135deg, #fdf2f4, #f8fafc);">
+        @include('components.sidebar')
+        @include('components.alert')
+
+        <div class="md:ml-64 p-4 md:p-8">
+
+            {{-- HEADER --}}
+            <div class="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('admin.kelas.index') }}"
+                        class="flex items-center justify-center w-12 h-12 outline outline-gray-400 rounded-2xl text-gray-600 hover:text-[#87010e] hover:outline-[#87010e] transition-all duration-200">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </a>
+                    <div>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-0.5">Manajemen Akademik</p>
+                        <h1 class="text-2xl font-bold text-gray-800 leading-tight">Tambah Kelas</h1>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <div class="text-right">
+                        <p id="current-time" class="text-sm font-medium text-gray-400"></p>
+                        <p id="current-date" class="text-sm font-medium text-gray-400 -mt-0.5"></p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-5 border-gray-200">
+
+            {{-- FORM CARD --}}
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+
+                <div class="px-6 py-4"
+                    style="background: linear-gradient(to right, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
+                    <h2 class="text-xl font-bold text-white">Form Kelas Baru</h2>
+                    <span class="text-gray-200 text-sm">Semua field bertanda * wajib diisi</span>
+                </div>
+
+                <form action="{{ route('admin.kelas.store') }}" method="POST" class="p-6 md:p-8">
+                    @csrf
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        {{-- Nama Kelas --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Nama Kelas <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="nama_kelas" value="{{ old('nama_kelas') }}"
+                                placeholder="Contoh: Kelas Pagi N5 - Batch 3"
+                                class="w-full px-5 py-3 rounded-xl text-sm border @error('nama_kelas') border-red-400 bg-red-50 @else border-gray-200 @enderror focus:outline-none focus:border-[#87010e] bg-white shadow-sm transition-colors">
+                            @error('nama_kelas')
+                                <p class="mt-2 text-xs text-red-500 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-3 h-3"></i> {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        {{-- Program --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Program <span class="text-red-500">*</span>
+                            </label>
+                            <select name="program_id"
+                                class="w-full px-5 py-3 rounded-xl text-sm border @error('program_id') border-red-400 bg-red-50 @else border-gray-200 @enderror focus:outline-none focus:border-[#87010e] bg-white shadow-sm transition-colors">
+                                <option value="">-- Pilih Program --</option>
+                                @foreach (\App\Models\Program::where('status', 'aktif')->orderBy('nama_program')->get() as $program)
+                                    <option value="{{ $program->id }}"
+                                        {{ old('program_id') == $program->id ? 'selected' : '' }}>
+                                        {{ $program->nama_program }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('program_id')
+                                <p class="mt-2 text-xs text-red-500 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-3 h-3"></i> {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        {{-- Tanggal Mulai --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Tanggal Mulai <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" name="tanggal_mulai" value="{{ old('tanggal_mulai') }}"
+                                class="w-full px-5 py-3 rounded-xl text-sm border @error('tanggal_mulai') border-red-400 bg-red-50 @else border-gray-200 @enderror focus:outline-none focus:border-[#87010e] bg-white shadow-sm transition-colors">
+                            @error('tanggal_mulai')
+                                <p class="mt-2 text-xs text-red-500 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-3 h-3"></i> {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        {{-- Tanggal Selesai --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Tanggal Selesai <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" name="tanggal_selesai" value="{{ old('tanggal_selesai') }}"
+                                class="w-full px-5 py-3 rounded-xl text-sm border @error('tanggal_selesai') border-red-400 bg-red-50 @else border-gray-200 @enderror focus:outline-none focus:border-[#87010e] bg-white shadow-sm transition-colors">
+                            @error('tanggal_selesai')
+                                <p class="mt-2 text-xs text-red-500 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-3 h-3"></i> {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        {{-- Status --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Status <span class="text-red-500">*</span>
+                            </label>
+                            <select name="status"
+                                class="w-full px-5 py-3 rounded-xl text-sm border @error('status') border-red-400 bg-red-50 @else border-gray-200 @enderror focus:outline-none focus:border-[#87010e] bg-white shadow-sm transition-colors">
+                                <option value="">-- Pilih Status --</option>
+                                <option value="aktif" {{ old('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                <option value="nonaktif" {{ old('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif
+                                </option>
+                            </select>
+                            @error('status')
+                                <p class="mt-2 text-xs text-red-500 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-3 h-3"></i> {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="flex items-center gap-3 mt-8 pt-6 border-t border-gray-100">
+                        <button type="submit"
+                            class="group inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-semibold shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                            style="background: linear-gradient(135deg, var(--color-accent-gradient-1), var(--color-accent-gradient-2));">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            Simpan Kelas
+                        </button>
+                        <a href="{{ route('admin.kelas.index') }}"
+                            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-gray-600 text-sm font-semibold bg-gray-100 hover:bg-gray-200 transition-all duration-200">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                            Batal
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        (function clock() {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+            function tick() {
+                const now = new Date();
+                const hh = String(now.getHours()).padStart(2, '0');
+                const mm = String(now.getMinutes()).padStart(2, '0');
+                const ss = String(now.getSeconds()).padStart(2, '0');
+                document.getElementById('current-time').textContent = `${hh}:${mm}:${ss}`;
+                document.getElementById('current-date').textContent =
+                    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            }
+            tick();
+            setInterval(tick, 1000);
+        })();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    </script>
+@endsection

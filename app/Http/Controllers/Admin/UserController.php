@@ -189,12 +189,6 @@ class UserController extends Controller
             ->with('success', 'User berhasil diupdate');
     }
 
-    // public function destroy(User $user)
-    // {
-    //     $user->update(['is_active' => false]);
-    //     Log::warning("User Deactivated", ['user_id' => $user->id, 'createdBy' => Auth::id()]);
-    //     return back()->with('success', 'User dinonaktifkan');
-    // }
 
     public function destroy(User $user)
     {

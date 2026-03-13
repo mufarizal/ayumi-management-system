@@ -42,7 +42,9 @@
         ],
     ];
     $academicMenus = [
-        ['label' => 'Kelas', 'route' => 'admin.classes.index', 'active' => 'admin.classes.*', 'icon' => 'school'],
+        ['label' => 'Program', 'route' => 'admin.program.index', 'active' => 'admin.program.*', 'icon' => 'layers'],
+        ['label' => 'Kelas', 'route' => 'admin.kelas.index', 'active' => 'admin.kelas.*', 'icon' => 'school'],
+
         [
             'label' => 'Pendaftaran',
             'route' => 'admin.enrollments.index',
