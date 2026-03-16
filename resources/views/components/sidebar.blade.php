@@ -47,8 +47,8 @@
 
         [
             'label' => 'Pendaftaran',
-            'route' => 'admin.enrollments.index',
-            'active' => 'admin.enrollments.*',
+            'route' => 'admin.pendaftaran.index',
+            'active' => 'admin.pendaftaran.*',
             'icon' => 'user-plus',
         ],
         [

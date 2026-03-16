@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\PendaftaranController;
 use App\Http\Controllers\Admin\PengajarController;
 use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\SiswaController;
@@ -53,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
         // ======================
         Route::resource('program', ProgramController::class);
         Route::resource('kelas', KelasController::class);
-        Route::get('/pendaftaran', fn() => view('admin.academic_managements.enrollments.index'))->name('enrollments.index');
+        Route::resource('pendaftaran', PendaftaranController::class);
         Route::get('/jadwal', fn() => view('admin.academic_managements.schedules.index'))->name('schedules.index');
         Route::get('/presensi', fn() => view('admin.academic_managements.attendances.index'))->name('attendances.index');
         Route::get('/presensi-siswa', fn() => view('admin.academic_managements.student_attendances.index'))->name('student-attendances.index');

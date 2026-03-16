@@ -22,4 +22,9 @@ class Pengajar extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function pendaftaran()
+    {
+        return $this->hasMany(Pendaftaran::class);
+    }
 }
